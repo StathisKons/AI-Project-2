@@ -219,12 +219,60 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     Your minimax agent with alpha-beta pruning (question 3)
     """
 
+    def maxValue(self, gameState: GameState, depth: int, alpha, beta):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+
+        # pacman is always index 0
+        agentIndex = 0
+        actions = gameState.getLegalActions(agentIndex)
+
+        bestAction = 0
+        maxScore = 'a'
+        for action in actions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            score = self.minValue(successor, depth, 1, alpha, beta)
+            if maxScore == 'a' or score > maxScore:
+                maxScore = score
+                bestAction = action
+                if maxScore > beta:
+                    return maxScore
+                alpha = max(alpha, maxScore)
+        
+        return bestAction if depth == 0 else maxScore
+    
+    def minValue(self, gameState: GameState, depth: int, agentIndex: int, alpha, beta):
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+        n = gameState.getNumAgents()
+
+        actions = gameState.getLegalActions(agentIndex)
+
+        minScore = 'a' 
+        for action in actions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            score = self.minValue(successor, depth, agentIndex + 1, alpha, beta) if agentIndex + 1 < n else self.maxValue(successor, depth + 1, alpha, beta)
+            if minScore == 'a' or score < minScore:
+                minScore = score
+                if minScore < alpha:
+                    return minScore
+                beta = min(beta, minScore)
+
+        return minScore
+
+    def alphaBeta(self, gameState: GameState):
+        return self.maxValue(gameState, 0, -float('inf'), float('inf'))
+
+
+
     def getAction(self, gameState: GameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.alphaBeta(gameState)
+        # util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
