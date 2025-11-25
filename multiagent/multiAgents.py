@@ -75,7 +75,41 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        # print("Action:", action)
+        # print("newPos:", newPos)
+        # print("newFood:\n", newFood)
+        # print("newGhostStates:")
+        # for ghostState in newGhostStates:
+        #     print("\t", ghostState)
+        # print("newScaredTimes:", newScaredTimes)
+
+        foodList = newFood.asList()
+
+        evaluation = 0
+
+        if foodList:
+            closetFood = min(util.manhattanDistance(newPos, food) for food in foodList)
+            evaluation += 100 / (10 ** min(util.manhattanDistance(newPos, food) for food in foodList))
+        else :
+            evaluation += 1000
+
+        for ghost in newGhostStates:
+            distance = util.manhattanDistance(ghost.configuration.getPosition(), newPos)
+            if distance == 0:
+                evaluation = -float('inf')
+                break
+            
+            if distance < 6:
+                evaluation -= 1000/ (10 ** distance)
+        
+
+
+        # -100/ 10^mhdist
+        # if mhdist = 0 -> -inf
+        # me noiazei score, manhattan distance apo koninotero fantasma (an den einai scared) kai manhattan apo koninoterh koukida
+
+        return evaluation + successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
