@@ -147,6 +147,46 @@ class MinimaxAgent(MultiAgentSearchAgent):
     Your minimax agent (question 2)
     """
 
+    def maxValue(self, gameState: GameState, depth: int):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+
+        # pacman is always index 0
+        agentIndex = 0
+        actions = gameState.getLegalActions(agentIndex)
+
+        bestAction = 0
+        maxScore = 'a'
+        for action in actions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            score = self.minValue(successor, depth, 1)
+            if maxScore == 'a' or score > maxScore:
+                maxScore = score
+                bestAction = action
+        
+        return bestAction if depth == 0 else maxScore
+    
+    def minValue(self, gameState: GameState, depth: int, agentIndex: int):
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+        n = gameState.getNumAgents()
+
+        actions = gameState.getLegalActions(agentIndex)
+
+        minScore = 'a' 
+        for action in actions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            score = self.minValue(successor, depth, agentIndex + 1) if agentIndex + 1 < n else self.maxValue(successor, depth + 1)
+            if minScore == 'a' or score < minScore:
+                minScore = score
+
+        return minScore
+
+    def minimax(self, gameState: GameState):
+        return self.maxValue(gameState, 0)
+
+
     def getAction(self, gameState: GameState):
         """
         Returns the minimax action from the current gameState using self.depth
@@ -171,7 +211,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.minimax(gameState)
+        # util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
