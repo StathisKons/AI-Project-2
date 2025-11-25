@@ -75,6 +75,7 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
+        #  Den kanw tipota sxetika me to big dot kai scared ghosts
 
         # print("Action:", action)
         # print("newPos:", newPos)
@@ -86,30 +87,30 @@ class ReflexAgent(Agent):
 
         foodList = newFood.asList()
 
-        evaluation = 0
+        evaluation = successorGameState.getScore() 
 
         if foodList:
             closetFood = min(util.manhattanDistance(newPos, food) for food in foodList)
+            # add score proportional to the distance, we want to reward being closer to a food
             evaluation += 100 / (10 ** min(util.manhattanDistance(newPos, food) for food in foodList))
         else :
-            evaluation += 1000
+            # we need to reward a state where all the food has been eaten
+            evaluation = float('inf')
 
         for ghost in newGhostStates:
             distance = util.manhattanDistance(ghost.configuration.getPosition(), newPos)
+            
+            # if a ghost shares the same position as pacman its game over
             if distance == 0:
                 evaluation = -float('inf')
                 break
             
+            # we only care about ghosts that are close to us
             if distance < 6:
                 evaluation -= 1000/ (10 ** distance)
         
 
-
-        # -100/ 10^mhdist
-        # if mhdist = 0 -> -inf
-        # me noiazei score, manhattan distance apo koninotero fantasma (an den einai scared) kai manhattan apo koninoterh koukida
-
-        return evaluation + successorGameState.getScore()
+        return evaluation
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
