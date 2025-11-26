@@ -298,7 +298,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         
         return bestAction if depth == 0 else maxScore
     
-    def expValue(self, gameState: GameState, depth: int, agentIndex: int):
+    def expValue(self, gameState: GameState, depth: int, agentIndex: int) -> float:
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState)
 
@@ -335,7 +335,44 @@ def betterEvaluationFunction(currentGameState: GameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    foodList = newFood.asList()
+
+    evaluation = currentGameState.getScore() 
+
+    evaluation -= 100*len(foodList)
+
+    if foodList:
+        closetFood = min(util.manhattanDistance(newPos, food) for food in foodList)
+        # add score proportional to the distance, we want to reward being closer to a food
+        evaluation += 10 / (10 ** min(util.manhattanDistance(newPos, food) for food in foodList))
+    else :
+        # we need to reward a state where all the food has been eaten
+        # evaluation = float('inf')
+        evaluation += 100000
+
+    for ghost in newGhostStates:
+        distance = util.manhattanDistance(ghost.getPosition(), newPos)
+
+        scared = ghost.scaredTimer
+
+        # if a ghost shares the same position as pacman its game over
+        if distance == 0 and not scared:
+            evaluation = -float('inf')
+            break
+        
+        # we only care about ghosts that are close to us
+        if distance < 6:
+            sign = -1 if not scared else 1
+            evaluation += sign * 1000/ (10 ** distance)
+    
+
+    return evaluation
 
 # Abbreviation
 better = betterEvaluationFunction
