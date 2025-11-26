@@ -228,6 +228,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agentIndex)
 
         bestAction = 0
+        #  python doesnt like unitialized variables :D
         maxScore = 'a'
         for action in actions:
             successor = gameState.generateSuccessor(agentIndex, action)
@@ -249,6 +250,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         actions = gameState.getLegalActions(agentIndex)
 
+        #  python doesnt like unitialized variables :D
         minScore = 'a' 
         for action in actions:
             successor = gameState.generateSuccessor(agentIndex, action)
@@ -288,6 +290,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agentIndex)
 
         bestAction = 0
+        #  python doesnt like unitialized variables :D
         maxScore = 'a'
         for action in actions:
             successor = gameState.generateSuccessor(agentIndex, action)
